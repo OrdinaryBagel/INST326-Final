@@ -5,7 +5,7 @@ teamsDict = {}
 class Team:
     def __init__(self,name, gp, pts, off_rebounds, def_rebounds, ast, stl, blk, to, pf):
         """
-        Driver: Thomas
+        Driver: Thomas, Peter
         Navigator: Khalid
         initalizes team objects the variables represent:
         name = name
@@ -47,6 +47,14 @@ class Team:
         self.pf = pf
         self.ast_to = ast/to
 
+    def __repr__(self):
+        return (
+            f"Team{self.name}, GP={self.gp}, PTS={self.pts}\n"
+            f"REB={self.total_rebounds} OFF={self.off_rebounds}, DEF={self.def_rebounds}\n"
+            f"AST={self.ast}, STL={self.stl}, BLK={self.blk}\n"
+            f"TO={self.to}, PF={self.pf}, AST/TO={self.ast_to}\n"
+        )
+    
 def functions(func):
     """determines what the program will do, will be update by multiple people as the project moves forward."""
     if func == 1:
