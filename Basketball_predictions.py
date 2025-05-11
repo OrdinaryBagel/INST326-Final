@@ -141,7 +141,47 @@ class Player:
             f"AST={self.ast}, STL={self.stl}, BLK={self.blk}\n"
             f"TO={self.to}, PF={self.pf}\n"
         )
+    
+class PlayerEfficiency:
+    """Calculates Plater Efficiency with different measures"""
 
+    def calculate_per(player, team_pace=100):
+        """Calculates the PER Player Efficiency Rating for a player."""
+
+        if player.gp == 0:
+            return 0.0
+        
+        pts = player.pts
+        reb = player.rb
+        ast = player.ast
+        stl = player.stl
+        blk = player.blk
+        to = player.to
+        pf = player.pf
+
+        # Calculate the individual PER Adds positive stats and subtracts negative states 
+        # Multiplies by a number that indicates weight of the stat
+        positive = (pts * 0.85 + reb * 0.7 + ast * 0.7 + stl * 1.2 + blk * 0.9)
+        negative = (to * 0.9 + pf * 0.45)                       
+        
+        raw_per = positive - negative
+        if team_pace != 100:
+            per = raw_per * (100 / team_pace)            
+                   
+        return round(per, 1)
+
+    def get_team_pers(team, team_pace=100):
+        """ Calculate PER for all players on a team
+        
+        Returns:
+        dict: Dictionary with player names as keys and PER values as values
+        """
+        pers = {}
+        for player_name, player in team.playersDict.items():
+            pers[player_name] = PlayerEfficiency.calculate_per(player, team_pace)
+        
+        return dict(sorted(pers.items(), key=lambda x: x[1], reverse=True))
+    
 def functions(func):
     """determines what the program will do, will be update by multiple people as the project moves forward."""
     if func == 1:
@@ -162,9 +202,30 @@ def functions(func):
             teamsDict[name].print_player(p_name)
         else:
             print(f"{name} does not exist")
+
+    elif func == 4:
+        team_name = input("Please enter the name of the team: ")
+        if team_name in teamsDict:
+            player_name = input("Enter player name (or 'all' for team rankings): ")
+            team = teamsDict[team_name]
+            if player_name.lower() == "all":
+                # Show PER for entire team
+                team_pers = PlayerEfficiency.get_team_pers(team)
+                print(f"\n{team_name} PER Rankings:")
+                for name, per in team_pers.items():
+                    print(f"{name}: {per}")
+            elif player_name in team.playersDict:
+                # Show individual player PER
+                player = team.playersDict[player_name]
+                PlayerEfficiency.print_player_per(player)
+            else:
+                print(f"{player_name} is not on this team.")
+        else:
+            print(f"{team_name} does not exist")
+
     elif func == 0:
         """ends the program"""
-        return 0
+        return 0  
     main()
 
 def main():
