@@ -205,7 +205,17 @@ def trade_players(team_a, player_a_name, team_b, player_b_name):
     Driver: Zayan
     Trades player_a from team_a with player_b from team_b.
     This is a 2 way trade if the user wishes to trade 2 players between 2 teams.
+
+    Args:
+        team_a(Team): The first team involved in the trade.
+        player_a_name(str): The name of the player from team A.
+        team_b (Team): The second team involved in the trade.
+        player_b_name (str): Name of the player from team B.
+    
+    Returns:
+        str: Message indicating the result of the trade.
     """
+    
     if player_a_name not in team_a.playersDict:
         return f"{player_a_name} is not on {team_a.name}."
     if player_b_name not in team_b.playersDict:
@@ -225,6 +235,13 @@ def trade_players(team_a, player_a_name, team_b, player_b_name):
     
     return (f"{player_a_name} has been traded from {team_a.name} to {team_b.name}, "
             f"and {player_b_name} has been traded from {team_b.name} to {team_a.name}.")
+
+def convert_input(x):
+    """
+    Converts input to float if not blank.
+    Returns None if the input is empty or only whitespace.
+    """
+    return float(x) if x.strip() else None
 
 def functions(func):
     """determines what the program will do, will be update by multiple people as the project moves forward."""
@@ -246,13 +263,100 @@ def functions(func):
             teamsDict[name].print_player(p_name)
         else:
             print(f"{name} does not exist")
+    elif func == 4:
+        team_name = input("Enter the name of the team: ")
+        if team_name in teamsDict:
+            name = input("Player name: ")
+            gp = input("Games played: ")
+            pts = input("PPG: ")
+            rb = input("Rebounds per game: ")
+            ast = input("Assists per game: ")
+            stl = input("Steals per game: ")
+            blk = input("Blocks per game: ")
+            to = input("Turnovers: ")
+            pf = input("Personal fouls: ")
+            msg = teamsDict[team_name].add_player(name, gp, pts, rb, ast, stl, blk, to, pf)
+            print(msg)
+        else:
+            print(f"{team_name} does not exist.")
+
+    elif func == 5:
+        team_name = input("Enter the name of the team: ")
+        if team_name in teamsDict:
+            name = input("Enter the name of the player to remove: ")
+            msg = teamsDict[team_name].remove_player(name)
+            print(msg)
+        else:
+            print(f"{team_name} does not exist.")
+
+    elif func == 6:
+        team_name = input("Enter the name of the team: ")
+        if team_name in teamsDict:
+            name = input("Enter the name of the player to update: ")
+            print("Press Enter to skip any stat you don't want to update.")
+        
+            gp = input("New games played (or leave blank): ")
+            pts = input("New PPG (or leave blank): ")
+            rb = input("New RPG (or leave blank): ")
+            ast = input("New APG (or leave blank): ")
+            stl = input("New SPG (or leave blank): ")
+            blk = input("New BPG (or leave blank): ")
+            to = input("New TO (or leave blank): ")
+            pf = input("New PF (or leave blank): ")
+
+            msg = teamsDict[team_name].update_player_stats(
+                name,
+                gp=convert_input(gp),
+                pts=convert_input(pts),
+                rb=convert_input(rb),
+                ast=convert_input(ast),
+                stl=convert_input(stl),
+                blk=convert_input(blk),
+                to=convert_input(to),
+                pf=convert_input(pf)
+            )
+            print(msg)
+        else:
+            print(f"{team_name} does not exist.")
+    elif func == 7:
+        from_team = input("Enter the name of the team trading the player: ")
+        to_team = input("Enter the name of the team receiving the player: ")
+        player_name = input("Enter the name of the player to trade: ")
+
+        if from_team in teamsDict and to_team in teamsDict:
+            msg = trade_player(teamsDict[from_team], teamsDict[to_team], player_name)
+            print(msg)
+        else:
+            print("One or both teams not found.")
+
+    elif func == 8:
+        team_a = input("Enter the first team name: ")
+        player_a = input("Enter the player from the first team: ")
+        team_b = input("Enter the second team name: ")
+        player_b = input("Enter the player from the second team: ")
+
+        if team_a in teamsDict and team_b in teamsDict:
+            msg = trade_players(teamsDict[team_a], player_a, teamsDict[team_b], player_b)
+            print(msg)
+        else:
+            print("One or both teams not found.")
+
     elif func == 0:
         """ends the program"""
         return 0
     main()
 
 def main():
-    func = int(input("Please type a number to select what you want to do.\n1:Create new team\n2:Display team stats\n3:Display Player Stats\n0:Exit the program\n"))
+    func = int(input("Please type a number to select what you want to do.\n"
+                     "1:Create new team\n"
+                     "2:Display team stats\n"
+                     "3:Display Player Stats\n"
+                     "4: Add player to team\n"
+                     "5: Remove player from team\n"
+                     "6: Update player stats\n"
+                     "7: Trade player (one-way)\n"
+                     "8: Trade players (two-way)\n"
+                     "0:Exit the program\n"))
     functions(func)
 
 if __name__=="__main__":
