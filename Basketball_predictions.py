@@ -42,6 +42,31 @@ class Team:
             p_pts = teamData["PPG"][i]
             self.playersDict[p_name] = Player(p_name, p_gp, p_pts, p_rb, p_ast, p_stl, p_blk, p_to, p_pf)
         self.calc_team_total()
+    def add_player(self, name, gp, pts, rb, ast, stl, blk, to, pf):
+        """
+        Driver: Zayan
+        Adds a new player to the team.
+        """
+        if name in self.playersDict:
+            print(f"{name} is already on the team.")
+            return
+        self.playersDict[name] = Player(name, float(gp), float(pts), float(rb), float(ast), float(stl), float(blk), float(to), float(pf))
+        print(f"{name} added to {self.name}.")
+        self.calc_team_total()
+
+    def remove_player(self,name):
+        """
+        Driver: Zayan
+        Removes a player from the team.
+        """
+        if name in self.playersDict:
+            del self.playersDict[name]
+            print(f"{name} removed from {self.name}.")
+            self.calc_team_total()
+        else: 
+            print(f"{name} is not on the team.")   
+
+
 
     def calc_team_total(self):
         """
