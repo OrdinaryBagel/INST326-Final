@@ -57,7 +57,10 @@ class Team:
             self.to += self.playersDict[key].to
             self.pf += self.playersDict[key].pf
     def print_player(self,name):
-        print(self.playersDict[name])
+        if name in self.playersDict:
+            print(self.playersDict[name])
+        else:
+            print(f"Player named {name} is not on this team.")
     def update(self):
         """
         Should be able to call other methods that add players, remove players, update a players stats, and trade players.
@@ -103,11 +106,17 @@ def functions(func):
         teamsDict[name] = Team(name,csv)
     elif func == 2:
         name = input("Please enter the name of the team: ")
-        print(teamsDict[name])
+        if name in teamsDict:
+            print(teamsDict[name])
+        else:
+            print(f"{name} does not exist")
     elif func == 3:
         name = input("Please enter the name of the team: ")
-        p_name = input("Please enter the name of the player: ")
-        teamsDict[name].print_player(p_name)
+        if name in teamsDict:
+            p_name = input("Please enter the name of the player: ")
+            teamsDict[name].print_player(p_name)
+        else:
+            print(f"{name} does not exist")
     elif func == 0:
         """ends the program"""
         return 0
