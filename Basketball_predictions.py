@@ -172,7 +172,10 @@ class Player:
         )
     
 class PlayerEfficiency:
-    """Calculates Plater Efficiency with different measures"""
+    """
+    Driver: Peter
+    Calculates Player Efficiency with different measures
+    """
 
     def calculate_per(player, team_pace=100):
         """Calculates the PER Player Efficiency Rating for a player."""
@@ -189,7 +192,7 @@ class PlayerEfficiency:
         pf = player.pf
 
         # Calculate the individual PER Adds positive stats and subtracts negative states 
-        # Multiplies by a number that indicates weight of the stat
+        # Multiplies by a number that indicates weight of the stat - team pace set to 100 and a conditional is setup incase we decide to be more accurate
         positive = (pts * 0.85 + reb * 0.7 + ast * 0.7 + stl * 1.2 + blk * 0.9)
         negative = (to * 0.9 + pf * 0.45)                       
         
@@ -200,17 +203,49 @@ class PlayerEfficiency:
         return round(per, 1)
 
     def get_team_pers(team, team_pace=100):
-        """ Calculate PER for all players on a team
-        
+        """ 
+        Driver: Peter
+        Calculate PER for all players on a team
         Returns:
-        dict: Dictionary with player names as keys and PER values as values
+            dict: Dictionary with player names as keys and PER values as values
         """
         pers = {}
         for player_name, player in team.playersDict.items():
             pers[player_name] = PlayerEfficiency.calculate_per(player, team_pace)
         
         return dict(sorted(pers.items(), key=lambda x: x[1], reverse=True))
-    
+
+def show_team_rankings_and_prediction():
+    """
+    Driver: Peter
+    Displays team PER rankings and predicts a winner between teams.
+    """
+    if not teamsDict:
+        print("No teams have been entered.")
+        return
+
+    team_averages = {}
+    for team_name, team in teamsDict.items():
+        pers = PlayerEfficiency.get_team_pers(team)
+        if pers:
+            avg_per = sum(pers.values()) / len(pers)
+        else:
+            avg_per = 0.0
+        team_averages[team_name] = round(avg_per, 2)
+
+    sorted_teams = sorted(team_averages.items(), key=lambda x: x[1], reverse=True)
+
+    print("\nTeam PER Rankings: ")
+    for rank, (team, avg_per) in enumerate(sorted_teams, start=1):
+        print(f"{rank}. {team} - Avg PER: {avg_per}")
+
+    if len(sorted_teams) >= 2:
+        top_team = sorted_teams[0][0]
+        runner_up = sorted_teams[1][0]
+        print(f"\nPrediction: {top_team} is more likely to win based on a higher average PER compared to {runner_up}.")
+    elif len(sorted_teams) == 1:
+        print(f"\nOnly one team entered. {sorted_teams[0][0]} is currently unopposed.")
+
 def trade_player(team_from, team_to, player_name):
     """
     Driver: Zayan
@@ -401,6 +436,8 @@ def functions(func):
                 print(f"{player_name} is not on this team.")
         else:
             print(f"{team_name} does not exist")
+    elif func == 10:
+        show_team_rankings_and_prediction()
 
     elif func == 0:
         """ends the program"""
@@ -418,6 +455,7 @@ def main():
                      "7: Trade player (one-way)\n"
                      "8: Trade players (two-way)\n"
                      "9: Calculate the Player Efficiency Rating of a Players and Teams\n"
+                     "10: Show overall team rankings and predictions\n"
                      "0:Exit the program\n"))
     functions(func)
 
