@@ -1,4 +1,5 @@
 import pandas as pd
+import csv
 
 teamsDict = {}
 
@@ -66,7 +67,26 @@ class Team:
         Should be able to call other methods that add players, remove players, update a players stats, and trade players.
         After any of these are done the total stats should be updated to reflect it.
         """
-
+    def save_to_csv(self, filename):
+        """
+        driver: Khalid Goshu
+        saves this team's player data to a CSV file
+        """
+        with open(filename, mode='w', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow(['Player', 'GP', 'PPG', 'Reb/G', 'APG', 'SPG', 'BPG', 'TO', 'PF'])
+            for player in self.playersDict.values():
+                writer.writerow([
+                    player.name,
+                    player.gp,
+                    player.pts,
+                    player.rb,
+                    player.ast,
+                    player.stl,
+                    player.blk,
+                    player.to,
+                    player.pf
+                ])
     def __repr__(self):
         return (
             f"Team: {self.name}, PTS={self.pts}\n"
