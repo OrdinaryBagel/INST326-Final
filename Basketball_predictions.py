@@ -318,6 +318,86 @@ def convert_input(x):
     """
     return float(x) if x.strip() else None
 
+def trade_calc(team_a,players_a,team_b,players_b):
+    """
+    Driver:Thomas
+    Calculates what team would lose and/or gain from a trade
+    supports multiple player trades
+    Returns nothing and prints the results of the tests
+    """
+    a_stats= {"pts": team_a.pts, "rb": team_a.rb, "ast": team_a.ast, "blk": team_a.blk, "to": team_a.to, "pf": team_a.pf}
+    b_stats= {"pts": team_b.pts, "rb": team_b.rb, "ast": team_b.ast, "blk": team_b.blk, "to": team_b.to, "pf": team_b.pf}
+
+    a_stats_d= {"pts": team_a.pts, "rb": team_a.rb, "ast": team_a.ast, "blk": team_a.blk, "to": team_a.to, "pf": team_a.pf}
+    b_stats_d= {"pts": team_b.pts, "rb": team_b.rb, "ast": team_b.ast, "blk": team_b.blk, "to": team_b.to, "pf": team_b.pf}
+    """calculates the stats changes that would come from the trade"""
+    for i in players_a:
+        a_stats["pts"]=a_stats["pts"] - team_a.playersDict[i].pts
+        a_stats["rb"]=a_stats["rb"] - team_a.playersDict[i].rb
+        a_stats["ast"]=a_stats["ast"] - team_a.playersDict[i].ast
+        a_stats["blk"]=a_stats["blk"] - team_a.playersDict[i].blk
+        a_stats["to"]=a_stats["to"] - team_a.playersDict[i].to
+        a_stats["pf"]=a_stats["pf"] - team_a.playersDict[i].pf
+        b_stats["pts"]=b_stats["pts"] + team_a.playersDict[i].pts
+        b_stats["rb"]=b_stats["rb"] + team_a.playersDict[i].rb
+        b_stats["ast"]=b_stats["ast"] + team_a.playersDict[i].ast
+        b_stats["blk"]=b_stats["blk"] + team_a.playersDict[i].blk
+        b_stats["to"]=b_stats["to"] + team_a.playersDict[i].to
+        b_stats["pf"]=b_stats["pf"] + team_a.playersDict[i].pf
+    for i in players_b:
+        a_stats["pts"]=a_stats["pts"] + team_b.playersDict[i].pts
+        a_stats["rb"]=a_stats["rb"] + team_b.playersDict[i].rb
+        a_stats["ast"]=a_stats["ast"] + team_b.playersDict[i].ast
+        a_stats["blk"]=a_stats["blk"] + team_b.playersDict[i].blk
+        a_stats["to"]=a_stats["to"] + team_b.playersDict[i].to
+        a_stats["pf"]=a_stats["pf"] + team_b.playersDict[i].pf
+        b_stats["pts"]=b_stats["pts"] - team_b.playersDict[i].pts
+        b_stats["rb"]=b_stats["rb"] - team_b.playersDict[i].rb
+        b_stats["ast"]=b_stats["ast"] - team_b.playersDict[i].ast
+        b_stats["blk"]=b_stats["blk"] - team_b.playersDict[i].blk
+        b_stats["to"]=b_stats["to"] - team_b.playersDict[i].to
+        b_stats["pf"]=b_stats["pf"] - team_b.playersDict[i].pf
+    """Calculates how much each stat changed percentage-wise to determine how much the team gained/loss
+    percentages will be added/subtracted to/from a total to determine if a team gained/lost overall
+    will also display the percent chnages in stats
+    """
+    temp = 0.0
+    a_change = 0.0
+    b_change = 0.0
+    for key in a_stats:
+        temp = (a_stats[key]-a_stats_d[key])/a_stats_d[key]
+        if key == "pf" or key =="to":
+            a_change = a_change - temp
+        else:
+            a_change +=temp
+        if temp<0:
+            print(f"{team_a.name}'s {key} would decrease by {temp*100*(-1)}% from this trade")
+        else:
+            print(f"{team_a.name}'s {key} would increase by {temp*100}% from this trade")
+    for key in b_stats:
+        temp = (b_stats[key]-b_stats_d[key])/b_stats_d[key]
+        if key == "pf" or key =="to":
+            b_change = b_change - temp
+        else:
+            b_change +=temp
+        if temp<0:
+            print(f"{team_b.name}'s {key} would decrease by {temp*100*(-1)}% from this trade")
+        else:
+            print(f"{team_b.name}'s {key} would increase by {temp*100}% from this trade")
+    if(a_change<0):
+        s1 = f"Overall the {team_a.name} would become worse from this trade"
+    elif(a_change>0):
+        s1 = f"Overall the {team_a.name} would become better from this trade"
+    else:
+        s1 = f"Overall the {team_a.name} wouldn't become better or worse from this trade"
+    if(b_change<0):
+        s2 = f"while the {team_b.name} would become worse from this trade"
+    elif(b_change>0):
+        s2 = f"while the {team_b.name} would become better from this trade"
+    else:
+        s2 = f"while the {team_a.name} wouldn't become better or worse from this trade"
+    print(f"{s1} {s2}")
+
 def functions(func):
     """determines what the program will do, will be update by multiple people as the project moves forward."""
     if func == 1:
@@ -438,7 +518,22 @@ def functions(func):
             print(f"{team_name} does not exist")
     elif func == 10:
         show_team_rankings_and_prediction()
-
+    elif func == 11:
+        temp = 1
+        players_a = []
+        players_b = []
+        team_a = input("Please enter the first team's name: ")
+        team_b = input("Please enter the second team's name: ")
+        while temp !="exit":
+            temp = input(f"Please enter the name of a player from {team_a}(\"exit\" to stop): ")
+            if(temp!=0 and temp in teamsDict[team_a].playersDict):
+                players_a.append(temp)
+        temp = 1
+        while temp !="exit":
+            temp = input(f"Please enter the name of a player from {team_b}(\"exit\" to stop): ")
+            if(temp!=0 and temp in teamsDict[team_b].playersDict):
+                players_b.append(temp)
+        trade_calc(teamsDict[team_a],players_a,teamsDict[team_b],players_b)
     elif func == 0:
         """ends the program"""
         return 0  
@@ -456,6 +551,7 @@ def main():
                      "8: Trade players (two-way)\n"
                      "9: Calculate the Player Efficiency Rating of a Players and Teams\n"
                      "10: Show overall team rankings and predictions\n"
+                     "11: Tests the theoretical gains/losses of a trade\n"
                      "0:Exit the program\n"))
     functions(func)
 
