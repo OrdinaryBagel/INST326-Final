@@ -198,7 +198,9 @@ class PlayerEfficiency:
         
         raw_per = positive - negative
         if team_pace != 100:
-            per = raw_per * (100 / team_pace)            
+            per = raw_per * (100 / team_pace)
+        else:
+            per = raw_per         
                    
         return round(per, 1)
 
