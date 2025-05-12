@@ -551,7 +551,7 @@ def main():
                      "6: Update player stats\n"
                      "7: Trade player (one-way)\n"
                      "8: Trade players (two-way)\n"
-                     "9: Calculate the Player Efficiency Rating of a Players and Teams\n"
+                     "9: Calculate the Player Efficiency Rating of Players\n"
                      "10: Show overall team rankings and predictions\n"
                      "11: Tests the theoretical gains/losses of a trade\n"
                      "0:Exit the program\n"))
