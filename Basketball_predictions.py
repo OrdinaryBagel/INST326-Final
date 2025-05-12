@@ -45,6 +45,7 @@ class Team:
     def add_player(self, name, gp, pts, rb, ast, stl, blk, to, pf):
         """
         Driver: Zayan
+        Navigator: Thomas
         Adds a new player to the team.
         """
         if name in self.playersDict:
@@ -57,6 +58,7 @@ class Team:
     def remove_player(self,name):
         """
         Driver: Zayan
+        Navigator: Khalid
         Removes a player from the team.
         """
         if name in self.playersDict:
@@ -69,6 +71,7 @@ class Team:
     def update_player_stats(self, name, gp=None, pts=None, rb=None, ast=None, stl=None, blk=None, to=None, pf=None):
         """
         Driver: Zayan
+        Navigator: Thomas
         Updates the stats of an existing player on the team.
         Only updates stats that are provided.
         """
@@ -99,8 +102,8 @@ class Team:
 
     def calc_team_total(self):
         """
-        Driver:Thomas
-        Navigator:Peter
+        Driver: Thomas
+        Navigator: Peter
         Calculates the total of the players stats to get the team stats
         """
         for key in self.playersDict:
@@ -124,6 +127,7 @@ class Team:
     def save_to_csv(self, filename):
         """
         driver: Khalid Goshu
+        Navigator: Zayan
         saves this team's player data to a CSV file
         """
         with open(filename, mode='w', newline='') as file:
@@ -174,6 +178,7 @@ class Player:
 class PlayerEfficiency:
     """
     Driver: Peter
+    Navigator: Zayan
     Calculates Player Efficiency with different measures
     """
 
@@ -205,6 +210,7 @@ class PlayerEfficiency:
     def get_team_pers(team, team_pace=100):
         """ 
         Driver: Peter
+        Navigator: Zayan
         Calculate PER for all players on a team
         Returns:
             dict: Dictionary with player names as keys and PER values as values
@@ -218,6 +224,7 @@ class PlayerEfficiency:
 def show_team_rankings_and_prediction():
     """
     Driver: Peter
+    Navigator: Khalid
     Displays team PER rankings and predicts a winner between teams.
     """
     if not teamsDict:
@@ -249,6 +256,7 @@ def show_team_rankings_and_prediction():
 def trade_player(team_from, team_to, player_name):
     """
     Driver: Zayan
+    Navigator: Thomas
     Trades a player from one team to another.
     This is a 1 way trade if the user wishes to move one player from a team to another.
 
@@ -278,6 +286,7 @@ def trade_player(team_from, team_to, player_name):
 def trade_players(team_a, player_a_name, team_b, player_b_name):
     """
     Driver: Zayan
+    Navigator: Peter
     Trades player_a from team_a with player_b from team_b.
     This is a 2 way trade if the user wishes to trade 2 players between 2 teams.
 
@@ -320,7 +329,8 @@ def convert_input(x):
 
 def trade_calc(team_a,players_a,team_b,players_b):
     """
-    Driver:Thomas
+    Driver: Thomas
+    Navigator: Peter
     Calculates what team would lose and/or gain from a trade
     supports multiple player trades
     Returns nothing and prints the results of the tests
