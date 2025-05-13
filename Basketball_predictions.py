@@ -523,7 +523,7 @@ def functions(func):
             elif player_name in team.playersDict:
                 # Show individual player PER
                 player = team.playersDict[player_name]
-                PlayerEfficiency.print_player_per(player)
+                print(f"{player_name}'s PER: {PlayerEfficiency.calculate_per(player)}")
             else:
                 print(f"{player_name} is not on this team.")
         else:
