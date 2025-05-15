@@ -188,6 +188,7 @@ class PlayerEfficiency:
         if player.gp == 0:
             return 0.0
         
+        gp = player.gp
         pts = player.pts
         reb = player.rb
         ast = player.ast
@@ -199,7 +200,7 @@ class PlayerEfficiency:
         # Calculate the individual PER Adds positive stats and subtracts negative states 
         # Multiplies by a number that indicates weight of the stat - team pace set to 100 and a conditional is setup incase we decide to be more accurate
         positive = (pts * 0.85 + reb * 0.7 + ast * 0.7 + stl * 1.2 + blk * 0.9)
-        negative = (to * 0.9 + pf * 0.45)                       
+        negative = (to/gp * 0.9 + pf/gp * 0.45)                       
         
         raw_per = positive - negative
         if team_pace != 100:
@@ -383,9 +384,9 @@ def trade_calc(team_a,players_a,team_b,players_b):
         else:
             a_change +=temp
         if temp<0:
-            print(f"{team_a.name}'s {key} would decrease by {temp*100*(-1)}% from this trade")
+            print(f"{team_a.name}'s {key} would decrease by {round(temp*100*(-1),2)}% from this trade")
         else:
-            print(f"{team_a.name}'s {key} would increase by {temp*100}% from this trade")
+            print(f"{team_a.name}'s {key} would increase by {round(temp*100,2)}% from this trade")
     for key in b_stats:
         temp = (b_stats[key]-b_stats_d[key])/b_stats_d[key]
         if key == "pf" or key =="to":
@@ -393,9 +394,9 @@ def trade_calc(team_a,players_a,team_b,players_b):
         else:
             b_change +=temp
         if temp<0:
-            print(f"{team_b.name}'s {key} would decrease by {temp*100*(-1)}% from this trade")
+            print(f"{team_b.name}'s {key} would decrease by {round(temp*100*(-1),2)}% from this trade")
         else:
-            print(f"{team_b.name}'s {key} would increase by {temp*100}% from this trade")
+            print(f"{team_b.name}'s {key} would increase by {round(temp*100,2)}% from this trade")
     if(a_change<0):
         s1 = f"Overall the {team_a.name} would become worse from this trade"
     elif(a_change>0):
