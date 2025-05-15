@@ -92,9 +92,63 @@ def trade_calc_test_3():
     "Knicks's pf would decrease by 0.6% from this trade\n"
     "Overall the Warriors would become better from this trade while the Knicks would become worse from this trade\n"
     )
+
+
+def test_add_player():
+    team = Basketball_predictions.Team("TestTeam", "TestTeam.csv")
+    team.playersDict.clear()
+    result = team.add_player("Test Player", 10, 20.0, 5.0, 4.0, 1.0, 0.5, 2.0, 1.0)
+    assert "Test Player" in team.playersDict
+    assert result == "Test Player added to TestTeam."
+
+def test_remove_player():
+    team = Basketball_predictions.Team("TestTeam", "TestTeam.csv")
+    team.playersDict.clear()
+    team.add_player("Remove Me", 5, 10.0, 4.0, 2.0, 0.5, 0.2, 1.0, 1.0)
+    result = team.remove_player("Remove Me")
+    assert "Remove Me" not in team.playersDict
+    assert result == "Remove Me removed from TestTeam."
+
+def test_update_player_stats():
+    team = Basketball_predictions.Team("TestTeam", "TestTeam.csv")
+    team.playersDict.clear()
+    team.add_player("Update Guy", 5, 10.0, 4.0, 2.0, 1.0, 0.5, 1.0, 1.0)
+    result = team.update_player_stats("Update Guy", pts=30.5, ast=6.5)
+    player = team.playersDict["Update Guy"]
+    assert player.pts == 30.5
+    assert player.ast == 6.5
+    assert result == "Update Guy's stats have been updated on TestTeam."
+
+def test_trade_player():
+    team_from = Basketball_predictions.Team("TeamA", "TestTeam.csv")
+    team_to = Basketball_predictions.Team("TeamB", "TestTeam.csv")
+    team_from.playersDict.clear()
+    team_to.playersDict.clear()
+    team_from.add_player("One Way", 5, 10.0, 3.0, 2.0, 1.0, 0.5, 1.0, 1.0)
+    result = Basketball_predictions.trade_player(team_from, team_to, "One Way")
+    assert "One Way" in team_to.playersDict
+    assert "One Way" not in team_from.playersDict
+    assert result == "One Way has been traded from TeamA to TeamB."
+
+def test_trade_players():
+    team_a = Basketball_predictions.Team("TeamA", "TestTeam.csv")
+    team_b = Basketball_predictions.Team("TeamB", "TestTeam.csv")
+    team_a.playersDict.clear()
+    team_b.playersDict.clear()
+    team_a.add_player("Alpha", 5, 15.0, 6.0, 4.0, 1.2, 0.8, 1.0, 2.0)
+    team_b.add_player("Beta", 5, 12.0, 5.0, 3.0, 1.0, 0.6, 2.0, 1.0)
+    result = Basketball_predictions.trade_players(team_a, "Alpha", team_b, "Beta")
+    assert "Alpha" in team_b.playersDict
+    assert "Beta" in team_a.playersDict
+    assert result == "Alpha has been traded from TeamA to TeamB, and Beta has been traded from TeamB to TeamA."
     
 if __name__ =="__main__":
     celtics_test()
     trade_calc_test_1()
     trade_calc_test_2()
     trade_calc_test_3()
+    test_add_player()
+    test_remove_player()
+    test_update_player_stats()
+    test_trade_player()
+    test_trade_players()
