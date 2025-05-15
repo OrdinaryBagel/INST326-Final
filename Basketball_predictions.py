@@ -1,5 +1,6 @@
 import pandas as pd
 import csv
+import random
 
 teamsDict = {}
 
@@ -411,6 +412,93 @@ def trade_calc(team_a,players_a,team_b,players_b):
         s2 = f"while the {team_a.name} wouldn't become better or worse from this trade"
     print(f"{s1} {s2}")
 
+def get_stat_leaders(stat, top_n=5):
+    """
+    driver: khalid goshu
+    navigator: zayan
+    Shows top N players across all teams for a given stat (such as points rebounds etc).
+    """
+    leaders = []
+    for team in teamsDict.values():
+        for player in team.playersDict.values():
+            value = getattr(player, stat, None)
+            if value is not None:
+                leaders.append((player.name, team.name, value))
+
+    leaders.sort(key=lambda x: x[2], reverse=True)
+    return leaders[:top_n]
+
+def get_top_players(team, n=3, by="PPG"):
+    """
+    driver: khalid goshu
+    Returns the top N players on a team by PPG or PER
+    """
+    if by.lower() == "per":
+        stats = {
+            name: PlayerEfficiency.calculate_per(player)
+            for name, player in team.playersDict.items()
+        }
+    else:
+        stats = {
+            name: player.pts for name, player in team.playersDict.items()
+        }
+
+    sorted_players = sorted(stats.items(), key=lambda x: x[1], reverse=True)
+    return sorted_players[:n]
+
+
+def simulate_game(team_a, team_b):
+    """
+    driver: khalid goshu
+    navigator: thomas minnihan
+    Simulates a game between two teams using their average PER and adds randomness to make the games more realistic because of the nature of sports
+    """
+    total_per_a = 0
+    total_per_b = 0
+
+    for player_name in team_a.playersDict:
+        player = team_a.playersDict[player_name]
+        total_per_a += PlayerEfficiency.calculate_per(player)
+    avg_per_a = total_per_a / len(team_a.playersDict) if team_a.playersDict else 0
+
+    for player_name in team_b.playersDict:
+        player = team_b.playersDict[player_name]
+        total_per_b += PlayerEfficiency.calculate_per(player)
+    avg_per_b = total_per_b / len(team_b.playersDict) if team_b.playersDict else 0
+
+    noise_a = random.uniform(-3, 3)
+    noise_b = random.uniform(-3, 3)
+
+    score_a = avg_per_a + noise_a
+    score_b = avg_per_b + noise_b
+
+    if avg_per_a > avg_per_b:
+        score_b += random.uniform(0, 2)
+    elif avg_per_b > avg_per_a:
+        score_a += random.uniform(0, 2)
+
+    print(f"\nSimulating Game: {team_a.name} vs {team_b.name}")
+    print(f"{team_a.name} Score: {round(score_a, 2)}")
+    print(f"{team_b.name} Score: {round(score_b, 2)}")
+
+    if score_a > score_b:
+        print(f"{team_a.name} wins!")
+    elif score_b > score_a:
+        print(f"{team_b.name} wins!")
+    else:
+        print("It's a tie!")
+        
+def load_team_from_csv(name, filename):
+    """
+    Loads a team from a csv file and returns a team object
+    """
+    try:
+        return Team(name, filename)
+    except Exception as e:
+        print(f"Error loading team from {filename}: {e}")
+        return None
+
+
 def functions(func):
     """determines what the program will do, will be update by multiple people as the project moves forward."""
     if func == 1:
@@ -547,6 +635,55 @@ def functions(func):
             if(temp!=0 and temp in teamsDict[team_b].playersDict):
                 players_b.append(temp)
         trade_calc(teamsDict[team_a],players_a,teamsDict[team_b],players_b)
+        
+    elif func == 12:
+        team_a = input("Enter the first team name: ")
+        team_b = input("Enter the second team name: ")
+        if team_a in teamsDict and team_b in teamsDict:
+            simulate_game(teamsDict[team_a], teamsDict[team_b])
+        else:
+            print("One or both teams not found.")
+    elif func == 13:
+        team_name = input("Enter the name of the team to save: ")
+        if team_name in teamsDict:
+            filename = input("Enter the filename to save to (e.g., team_data.csv): ")
+            try:
+                teamsDict[team_name].save_to_csv(filename)
+                print(f"{team_name} has been saved to {filename}")
+            except Exception as e:
+                print(f"Failed to save team: {e}")
+        else:
+            print(f"{team_name} does not exist.")
+            
+    elif func == 14:
+        name = input("Enter a name for the team: ")
+        filename = input("Enter the CSV filename to load from (e.g., team_data.csv): ")
+        team = load_team_from_csv(name, filename)
+        if team:
+            teamsDict[name] = team
+            print(f"{name} has been loaded from {filename}")
+        else:
+            print(f"Failed to load team from {filename}")
+
+    elif func == 15:
+        team_name = input("Enter the team name: ")
+        if team_name in teamsDict:
+            metric = input("Sort by 'PPG' or 'PER': ").strip().lower()
+            top_n = int(input("How many top players would you like to see? "))
+            top_players = get_top_players(teamsDict[team_name], n=top_n, by=metric)
+            print(f"\nTop {top_n} players on {team_name} by {metric.upper()}:")
+            for name, value in top_players:
+                print(f"{name}: {value}")
+        else:
+            print(f"{team_name} not found.")
+
+    elif func == 16:
+        stat = input("Enter the stat to rank players by (pts, rb, ast, stl, blk, to, pf): ").strip().lower()
+        top_n = int(input("How many top players would you like to see? "))
+        leaders = get_stat_leaders(stat, top_n)
+        print(f"\nTop {top_n} players across all teams by {stat.upper()}:")
+        for name, team, value in leaders:
+            print(f"{name} ({team}): {value}")
     elif func == 0:
         """ends the program"""
         return 0  
@@ -565,6 +702,11 @@ def main():
                      "9: Calculate the Player Efficiency Rating of Players\n"
                      "10: Show overall team rankings and predictions\n"
                      "11: Tests the theoretical gains/losses of a trade\n"
+                     "12: Simulate a game between two teams\n"
+                     "13: Save a team to CSV\n"
+                     "14: Load a team from CSV\n"
+                     "15: Show top players on a team\n"
+                     "16: Show stat leaders across all teams\n"
                      "0:Exit the program\n"))
     functions(func)
 
