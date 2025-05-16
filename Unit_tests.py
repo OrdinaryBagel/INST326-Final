@@ -172,6 +172,66 @@ def test_show_team_rankings():
     Basketball_predictions.show_team_rankings_and_prediction()
     assert "Team1" in Basketball_predictions.teamsDict
     assert "Team2" in Basketball_predictions.teamsDict
+
+def initialize_test_teams():
+    
+    warriors = Basketball_predictions.Team("Golden State Warriors", "WarriorsData.csv")
+    knicks = Basketball_predictions.Team("New York Knicks", "NewYorkKnicksData.csv")
+    Basketball_predictions.teamsDict["Golden State Warriors"] = warriors
+    Basketball_predictions.teamsDict["New York Knicks"] = knicks
+    return warriors, knicks
+
+def test_save_and_load_team():
+
+    print("\n=== Testing save_to_csv and loading ===")
+    warriors, _ = initialize_test_teams()
+
+    save_filename = "test_warriors_save.csv"
+    warriors.save_to_csv(save_filename)
+    print(f" Saved team to {save_filename}")
+
+    try:
+        loaded_team = Basketball_predictions.Team("Loaded Warriors", save_filename)
+        print(f"Loaded team with {len(loaded_team.playersDict)} players")
+    except Exception as e:
+        print(f" Error loading team: {e}")
+
+def test_simulate_game():
+    print("\n=== Testing simulate_game ===")
+    warriors, knicks = initialize_test_teams()
+
+    for i in range(3):
+        print(f"\nSimulation {i+1}:")
+        Basketball_predictions.simulate_game(warriors, knicks)
+
+def test_get_top_players():
+
+    print("\n=== Testing get_top_players ===")
+    warriors, knicks = initialize_test_teams()
+
+    print("\nTop 3 Warriors by PPG:")
+    top_ppg = Basketball_predictions.get_top_players(warriors, 3, "PPG")
+    for name, pts in top_ppg:
+        print(f"{name}: {pts}")
+
+    print("\nTop 3 Knicks by PER:")
+    top_per = Basketball_predictions.get_top_players(knicks, 3, "PER")
+    for name, per in top_per:
+        print(f"{name}: {per}")
+
+def test_get_stat_leaders():
+    print("\n=== Testing get_stat_leaders ===")
+    initialize_test_teams()
+
+    print("\nTop 5 PPG leaders:")
+    ppg_leaders = Basketball_predictions.get_stat_leaders("pts", 5)
+    for name, team, pts in ppg_leaders:
+        print(f"{name} ({team}): {pts}")
+
+    print("\nTop 3 assist leaders:")
+    ast_leaders = Basketball_predictions.get_stat_leaders("ast", 3)
+    for name, team, ast in ast_leaders:
+        print(f"{name} ({team}): {ast}")
     
 if __name__ =="__main__":
     celtics_test()
@@ -186,3 +246,7 @@ if __name__ =="__main__":
     test_calculate_per()
     test_get_team_pers()
     test_show_team_rankings()
+    test_save_and_load_team()
+    test_simulate_game()
+    test_get_top_players()
+    test_get_stat_leaders()
