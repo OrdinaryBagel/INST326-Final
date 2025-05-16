@@ -141,6 +141,37 @@ def test_trade_players():
     assert "Alpha" in team_b.playersDict
     assert "Beta" in team_a.playersDict
     assert result == "Alpha has been traded from TeamA to TeamB, and Beta has been traded from TeamB to TeamA."
+
+def test_calculate_per():
+    player = Basketball_predictions.Player("Test Player", 10, 200, 70, 50, 20, 10, 30, 25)
+    per = Basketball_predictions.PlayerEfficiency.calculate_per(player)
+    positive = (200 * 0.85 + 70 * 0.7 + 50 * 0.7 + 20 * 1.2 + 10 * 0.9)
+    negative = (30/10 * 0.9 + 25/10 * 0.45)
+    expected_per = round(positive - negative, 1)
+    assert per == expected_per
+
+def test_get_team_pers():
+    team = Basketball_predictions.Team("TestTeam", "TestTeam.csv")
+    team.playersDict.clear()
+    team.add_player("Player1", 10, 200, 70, 50, 20, 10, 30, 25)
+    team.add_player("Player2", 10, 180, 50, 40, 15, 8, 20, 18)
+    pers = Basketball_predictions.PlayerEfficiency.get_team_pers(team)
+    per_values = list(pers.values())
+    assert per_values == sorted(per_values, reverse=True)
+
+def test_show_team_rankings():
+    Basketball_predictions.teamsDict = {}
+    team1 = Basketball_predictions.Team("Team1", "TestTeam.csv")
+    team1.playersDict.clear()
+    team1.add_player("Player1", 10, 200, 70, 50, 20, 10, 30, 25)
+    team2 = Basketball_predictions.Team("Team2", "TestTeam.csv")
+    team2.playersDict.clear()
+    team2.add_player("Player3", 10, 160, 60, 30, 10, 6, 25, 20)
+    Basketball_predictions.teamsDict["Team1"] = team1
+    Basketball_predictions.teamsDict["Team2"] = team2
+    Basketball_predictions.show_team_rankings_and_prediction()
+    assert "Team1" in Basketball_predictions.teamsDict
+    assert "Team2" in Basketball_predictions.teamsDict
     
 if __name__ =="__main__":
     celtics_test()
@@ -152,3 +183,6 @@ if __name__ =="__main__":
     test_update_player_stats()
     test_trade_player()
     test_trade_players()
+    test_calculate_per()
+    test_get_team_pers()
+    test_show_team_rankings()
